@@ -10,12 +10,14 @@ chrome.runtime.onInstalled.addListener(() => {
 // コンテキストメニューの項目がクリックされたときに実行されるイベントリスナー
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "searchText") {
-    const text = info.selectionText;
-    searchTextOnYouGlish(text);
+    searchTextOnYouGlish(info.selectionText);
   }
 });
 
-function searchTextOnYouGlish(text) {
-  const url = `https://youglish.com/pronounce/${encodeURIComponent(text)}/english?`;
+function searchTextOnYouGlish(rawText) {
+  // 前後の空白を除き、連続する空白・改行を 1 つのスペースにまとめる
+  const text = (rawText || "").replace(/\s+/g, " ").trim();
+  if (!text) return;
+  const url = `https://youglish.com/pronounce/${encodeURIComponent(text)}/english`;
   chrome.tabs.create({ url });
 }
